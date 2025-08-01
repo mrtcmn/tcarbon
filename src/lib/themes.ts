@@ -1,0 +1,119 @@
+import type { TableTheme } from '../types/table.ts'
+
+export const defaultThemes: TableTheme[] = [
+  {
+    id: 'carbon-dark',
+    name: 'Carbon Dark',
+    background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+    headerBackground: '#333333',
+    borderColor: '#444444',
+    textColor: '#ffffff',
+    headerTextColor: '#ffffff',
+    alternateRowBackground: '#252525',
+    cellPadding: '12px 16px',
+    borderRadius: '8px',
+    fontFamily: '"JetBrains Mono", "Fira Code", "Monaco", monospace',
+    fontSize: '14px',
+    shadows: true,
+    gradients: true
+  },
+  {
+    id: 'carbon-light',
+    name: 'Carbon Light',
+    background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+    headerBackground: '#f1f3f4',
+    borderColor: '#e1e5e9',
+    textColor: '#202124',
+    headerTextColor: '#202124',
+    alternateRowBackground: '#f8f9fa',
+    cellPadding: '12px 16px',
+    borderRadius: '8px',
+    fontFamily: '"Inter", "SF Pro Display", system-ui, sans-serif',
+    fontSize: '14px',
+    shadows: true,
+    gradients: true
+  },
+  {
+    id: 'ocean-blue',
+    name: 'Ocean Blue',
+    background: 'linear-gradient(135deg, #0066cc 0%, #004499 100%)',
+    headerBackground: '#003366',
+    borderColor: '#0066cc',
+    textColor: '#ffffff',
+    headerTextColor: '#ffffff',
+    alternateRowBackground: 'rgba(255, 255, 255, 0.1)',
+    cellPadding: '14px 18px',
+    borderRadius: '12px',
+    fontFamily: '"Roboto", system-ui, sans-serif',
+    fontSize: '15px',
+    shadows: true,
+    gradients: true
+  },
+  {
+    id: 'forest-green',
+    name: 'Forest Green',
+    background: 'linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%)',
+    headerBackground: '#1f3b0c',
+    borderColor: '#4a7c24',
+    textColor: '#ffffff',
+    headerTextColor: '#ffffff',
+    alternateRowBackground: 'rgba(255, 255, 255, 0.1)',
+    cellPadding: '12px 16px',
+    borderRadius: '10px',
+    fontFamily: '"Source Code Pro", monospace',
+    fontSize: '14px',
+    shadows: true,
+    gradients: true
+  },
+  {
+    id: 'sunset-orange',
+    name: 'Sunset Orange',
+    background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)',
+    headerBackground: '#e55a2b',
+    borderColor: '#ff8c42',
+    textColor: '#ffffff',
+    headerTextColor: '#ffffff',
+    alternateRowBackground: 'rgba(255, 255, 255, 0.1)',
+    cellPadding: '14px 18px',
+    borderRadius: '8px',
+    fontFamily: '"Poppins", sans-serif',
+    fontSize: '14px',
+    shadows: true,
+    gradients: true
+  },
+  {
+    id: 'minimalist',
+    name: 'Minimalist',
+    background: '#ffffff',
+    headerBackground: '#000000',
+    borderColor: '#e0e0e0',
+    textColor: '#333333',
+    headerTextColor: '#ffffff',
+    cellPadding: '16px 20px',
+    borderRadius: '0px',
+    fontFamily: '"Helvetica Neue", Arial, sans-serif',
+    fontSize: '16px',
+    shadows: false,
+    gradients: false
+  },
+  {
+    id: 'neon-purple',
+    name: 'Neon Purple',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    headerBackground: '#5a67d8',
+    borderColor: '#805ad5',
+    textColor: '#ffffff',
+    headerTextColor: '#ffffff',
+    alternateRowBackground: 'rgba(255, 255, 255, 0.1)',
+    cellPadding: '12px 16px',
+    borderRadius: '12px',
+    fontFamily: '"Space Mono", monospace',
+    fontSize: '14px',
+    shadows: true,
+    gradients: true
+  }
+]
+
+export const getThemeById = (id: string): TableTheme => {
+  return defaultThemes.find(theme => theme.id === id) || defaultThemes[0]
+}
