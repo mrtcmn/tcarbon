@@ -39,6 +39,11 @@ export interface TableTheme {
   fontSize: string
   shadows: boolean
   gradients: boolean
+  // Background wrapper settings
+  wrapperBackground?: string
+  wrapperBackgroundImage?: string
+  wrapperPadding?: string
+  tableShadow?: string
 }
 
 export interface CellPosition {

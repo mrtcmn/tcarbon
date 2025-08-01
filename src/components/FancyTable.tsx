@@ -97,7 +97,8 @@ export const FancyTable: React.FC<FancyTableProps> = ({
       fontFamily: theme.fontFamily,
       fontSize: theme.fontSize,
       color: theme.textColor,
-      boxShadow: theme.shadows ? '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' : 'none'
+      // Remove shadow from here as it's now handled by BackgroundWrapper
+      border: `1px solid ${theme.borderColor}`
     }
   }
 

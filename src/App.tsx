@@ -1,6 +1,9 @@
-import React, { useRef, useCallback } from 'react'
-import { Upload, Download, Plus, Minus, Palette, Copy, FileImage, RefreshCw } from 'lucide-react'
+import React, { useRef, useCallback, useState } from 'react'
+import { Upload, Download, Plus, Minus, Palette, Copy, FileImage, RefreshCw, Sparkles, Table } from 'lucide-react'
 import { FancyTable } from './components/FancyTable.tsx'
+import { BackgroundWrapper } from './components/BackgroundWrapper.tsx'
+import { BackgroundControls } from './components/BackgroundControls.tsx'
+import { ThemeToggle } from './components/ThemeToggle.tsx'
 import { Button } from './components/ui/button.tsx'
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card.tsx'
 import { Input } from './components/ui/input.tsx'
@@ -23,6 +26,9 @@ function App() {
     removeRow,
     removeColumn
   } = useTableData()
+
+  const [backgroundColor, setBackgroundColor] = useState<string | undefined>(undefined)
+  const [backgroundImage, setBackgroundImage] = useState<string | undefined>(undefined)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const tableRef = useRef<HTMLDivElement>(null)
@@ -124,23 +130,29 @@ function App() {
   }, [updateTheme])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Fancy Table Preview
-            </CardTitle>
-            <p className="text-center text-gray-600 mt-2">
-              Create beautiful table presentations like Carbon.now.sh, but for tables
-            </p>
-          </CardHeader>
-        </Card>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Hero Header */}
+        <div className="relative px-6 py-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+              <Table className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="font-display text-3xl font-bold">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  tcarbon
+                </span>
+              </h1>
+              <p className="text-sm text-muted-foreground">Carbon for tables - Create beautiful table presentations</p>
+            </div>
+          </div>
+          <ThemeToggle />
+        </div>
 
         {/* Toolbar */}
-        <Card>
-          <CardContent className="p-4">
+        <Card className="mx-6">
+          <CardContent className="p-6">
             <div className="flex flex-wrap gap-4 items-center justify-between">
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -250,32 +262,49 @@ function App() {
                 </div>
               </div>
             </div>
+
+            {/* Background Controls */}
+            <div className="border-t pt-4">
+              <BackgroundControls
+                backgroundColor={backgroundColor}
+                backgroundImage={backgroundImage}
+                onBackgroundColorChange={setBackgroundColor}
+                onBackgroundImageChange={setBackgroundImage}
+              />
+            </div>
           </CardContent>
         </Card>
 
         {/* Table Preview */}
-        <Card>
-          <CardContent className="p-8">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="text-sm text-gray-600 text-center">
+        <Card className="mx-6 mb-8">
+          <CardContent className="p-4">
+            <div className="flex flex-col items-center space-y-6">
+              <div className="text-sm text-muted-foreground text-center font-medium">
                 Double-click cells to edit • Use arrow keys to navigate • Paste data from Excel/CSV
               </div>
               
               <div 
                 ref={tableRef}
-                className="inline-block"
+                className="w-full"
                 onPaste={handlePaste}
                 tabIndex={0}
               >
-                <FancyTable
-                  data={tableData}
-                  onDataChange={updateTableData}
-                />
+                <BackgroundWrapper
+                  theme={tableData.theme}
+                  backgroundColor={backgroundColor}
+                  backgroundImage={backgroundImage}
+                  className="w-full"
+                >
+                  <FancyTable
+                    data={tableData}
+                    onDataChange={updateTableData}
+                  />
+                </BackgroundWrapper>
               </div>
               
-              <div className="text-xs text-gray-500 text-center max-w-2xl">
-                Import CSV/Excel files or paste data directly. Themes are inspired by Carbon.now.sh 
-                for beautiful presentations. Export as image for sharing or documentation.
+              <div className="text-xs text-muted-foreground text-center max-w-2xl leading-relaxed">
+                Import CSV/Excel files or paste data directly. Professional themes inspired by Carbon.sh 
+                for beautiful presentations. Export as high-quality images for sharing or documentation.
               </div>
             </div>
           </CardContent>

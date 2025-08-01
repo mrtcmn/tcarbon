@@ -15,7 +15,10 @@ export const defaultThemes: TableTheme[] = [
     fontFamily: '"JetBrains Mono", "Fira Code", "Monaco", monospace',
     fontSize: '14px',
     shadows: true,
-    gradients: true
+    gradients: true,
+    wrapperBackground: 'linear-gradient(135deg, #232526 0%, #414345 100%)',
+    wrapperPadding: '60px',
+    tableShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
   },
   {
     id: 'carbon-light',
@@ -31,7 +34,10 @@ export const defaultThemes: TableTheme[] = [
     fontFamily: '"Inter", "SF Pro Display", system-ui, sans-serif',
     fontSize: '14px',
     shadows: true,
-    gradients: true
+    gradients: true,
+    wrapperBackground: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+    wrapperPadding: '60px',
+    tableShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2)'
   },
   {
     id: 'ocean-blue',
@@ -47,7 +53,10 @@ export const defaultThemes: TableTheme[] = [
     fontFamily: '"Roboto", system-ui, sans-serif',
     fontSize: '15px',
     shadows: true,
-    gradients: true
+    gradients: true,
+    wrapperBackground: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    wrapperPadding: '60px',
+    tableShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
   },
   {
     id: 'forest-green',
@@ -63,7 +72,10 @@ export const defaultThemes: TableTheme[] = [
     fontFamily: '"Source Code Pro", monospace',
     fontSize: '14px',
     shadows: true,
-    gradients: true
+    gradients: true,
+    wrapperBackground: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+    wrapperPadding: '60px',
+    tableShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
   },
   {
     id: 'sunset-orange',
@@ -79,7 +91,10 @@ export const defaultThemes: TableTheme[] = [
     fontFamily: '"Poppins", sans-serif',
     fontSize: '14px',
     shadows: true,
-    gradients: true
+    gradients: true,
+    wrapperBackground: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
+    wrapperPadding: '60px',
+    tableShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)'
   },
   {
     id: 'minimalist',
@@ -94,7 +109,10 @@ export const defaultThemes: TableTheme[] = [
     fontFamily: '"Helvetica Neue", Arial, sans-serif',
     fontSize: '16px',
     shadows: false,
-    gradients: false
+    gradients: false,
+    wrapperBackground: '#ffffff',
+    wrapperPadding: '60px',
+    tableShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)'
   },
   {
     id: 'neon-purple',
@@ -110,7 +128,10 @@ export const defaultThemes: TableTheme[] = [
     fontFamily: '"Space Mono", monospace',
     fontSize: '14px',
     shadows: true,
-    gradients: true
+    gradients: true,
+    wrapperBackground: 'linear-gradient(135deg, #e0c3fc 0%, #9bb5ff 100%)',
+    wrapperPadding: '60px',
+    tableShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
   }
 ]
 
