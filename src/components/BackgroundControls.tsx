@@ -87,9 +87,9 @@ export const BackgroundControls: React.FC<BackgroundControlsProps> = ({
   }
 
   return (
-    <div className="flex items-center gap-2 flex-wrap p-1">
+    <div className="flex flex-wrap items-center gap-2 p-1">
       <div className="flex items-center gap-2">
-        <Palette className="w-4 h-4 ml-2" />
+        <Palette className="ml-2 size-4" />
         <span className="text-sm font-medium">Background:</span>
       </div>
 
@@ -106,7 +106,7 @@ export const BackgroundControls: React.FC<BackgroundControlsProps> = ({
               <div className="flex items-center gap-2">
                 {color.value && (
                   <div 
-                    className="w-4 h-4 rounded border border-gray-300"
+                    className="size-4 rounded border border-gray-300"
                     style={{ background: color.value }}
                   />
                 )}
@@ -123,7 +123,7 @@ export const BackgroundControls: React.FC<BackgroundControlsProps> = ({
         onClick={() => fileInputRef.current?.click()}
         className="flex items-center gap-2"
       >
-        <Image className="w-4 h-4" />
+        <Image className="size-4" />
         Upload Image
       </Button>
 
@@ -142,7 +142,7 @@ export const BackgroundControls: React.FC<BackgroundControlsProps> = ({
           onClick={clearBackground}
           className="flex items-center gap-2"
         >
-          <X className="w-4 h-4" />
+          <X className="size-4" />
           Clear
         </Button>
       )}
@@ -152,7 +152,7 @@ export const BackgroundControls: React.FC<BackgroundControlsProps> = ({
           Custom image active
         </div>
       )}
-      <div className="border-r self-stretch w-px -my-1"></div>
+      <div className="-my-1 w-px self-stretch border-r"></div>
     </div>
   )
 }

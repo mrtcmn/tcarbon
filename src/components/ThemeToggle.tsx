@@ -13,19 +13,19 @@ export const ThemeToggle: React.FC = () => {
       onClick={toggleTheme}
       className="relative transition-all duration-200 hover:scale-105"
     >
-      <div className="relative w-5 h-5">
+      <div className="relative size-5">
         <Sun 
-          className={`absolute w-5 h-5 transition-all duration-300 ${
+          className={`absolute size-5 transition-all duration-300 ${
             theme === 'light' 
-              ? 'opacity-100 rotate-0 scale-100' 
-              : 'opacity-0 rotate-90 scale-0'
+              ? 'rotate-0 scale-100 opacity-100' 
+              : 'rotate-90 scale-0 opacity-0'
           }`}
         />
         <Moon 
-          className={`absolute w-5 h-5 transition-all duration-300 ${
+          className={`absolute size-5 transition-all duration-300 ${
             theme === 'dark' 
-              ? 'opacity-100 rotate-0 scale-100' 
-              : 'opacity-0 -rotate-90 scale-0'
+              ? 'rotate-0 scale-100 opacity-100' 
+              : '-rotate-90 scale-0 opacity-0'
           }`}
         />
       </div>

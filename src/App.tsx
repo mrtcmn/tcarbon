@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState } from 'react'
-import { Upload, Download, Plus, Minus, Palette, Copy, FileImage, RefreshCw, Sparkles, Table } from 'lucide-react'
+import { Upload, Download, Plus, Minus, Palette, Copy, FileImage, RefreshCw, Sparkles, Table, MousePointer2, ArrowBigDown, FileSpreadsheet, ArrowBigUp, ArrowBigLeft, ArrowBigRight } from 'lucide-react'
 import { FancyTable } from './components/FancyTable.tsx'
 import { BackgroundWrapper } from './components/BackgroundWrapper.tsx'
 import { BackgroundControls } from './components/BackgroundControls.tsx'
@@ -39,7 +39,7 @@ function App() {
 
     try {
       let data: string[][]
-      
+
       if (file.name.endsWith('.csv')) {
         const text = await file.text()
         data = parseCSV(text)
@@ -65,7 +65,7 @@ function App() {
 
   const handlePaste = useCallback(async (event: React.ClipboardEvent) => {
     event.preventDefault()
-    
+
     const text = event.clipboardData.getData('text')
     if (!text) return
 
@@ -96,8 +96,8 @@ function App() {
 
   const handleDownloadExcel = useCallback(() => {
     const buffer = tableDataToExcel(tableData)
-    const blob = new Blob([buffer], { 
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     })
     saveAs(blob, `${tableData.name}.xlsx`)
   }, [tableData])
@@ -112,7 +112,7 @@ function App() {
         logging: false,
         useCORS: true
       })
-      
+
       canvas.toBlob((blob) => {
         if (blob) {
           saveAs(blob, `${tableData.name}.png`)
@@ -129,14 +129,17 @@ function App() {
     updateTheme(theme)
   }, [updateTheme])
 
+
+  const commandButtonClass = cn("size-6 rounded-md border border-gray-300 bg-white p-1 shadow-sm")
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="mx-auto max-w-7xl space-y-8">
         {/* Hero Header */}
-        <div className="relative px-6 py-8 flex items-center justify-between">
+        <div className="relative flex items-center justify-between px-6 py-8">
           <div className="flex items-center gap-4">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
-              <Table className="w-6 h-6 text-white" />
+            <div className="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 p-2">
+              <Table className="size-6 text-white" />
             </div>
             <div>
               <h1 className="font-display text-3xl font-bold">
@@ -153,7 +156,7 @@ function App() {
         {/* Toolbar */}
         <Card className="p-0">
           <CardContent className="p-0">
-            <div className="flex flex-wrap gap-4 items-center justify-between p-2">
+            <div className="flex flex-wrap items-center justify-between gap-4 p-2">
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
@@ -161,10 +164,10 @@ function App() {
                   onClick={() => fileInputRef.current?.click()}
                   className="flex items-center gap-2"
                 >
-                  <Upload className="w-4 h-4" />
+                  <Upload className="size-4" />
                   Import File
                 </Button>
-                
+
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -179,7 +182,7 @@ function App() {
                   onClick={handleCopyTable}
                   className="flex items-center gap-2"
                 >
-                  <Copy className="w-4 h-4" />
+                  <Copy className="size-4" />
                   Copy
                 </Button>
 
@@ -189,7 +192,7 @@ function App() {
                   onClick={handleDownloadCSV}
                   className="flex items-center gap-2"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="size-4" />
                   CSV
                 </Button>
 
@@ -199,7 +202,7 @@ function App() {
                   onClick={handleDownloadExcel}
                   className="flex items-center gap-2"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="size-4" />
                   Excel
                 </Button>
 
@@ -209,18 +212,18 @@ function App() {
                   onClick={handleExportImage}
                   className="flex items-center gap-2"
                 >
-                  <FileImage className="w-4 h-4" />
+                  <FileImage className="size-4" />
                   PNG
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-2 items-center">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={addRow}
                   className="flex items-center gap-2"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="size-4" />
                   Row
                 </Button>
 
@@ -230,7 +233,7 @@ function App() {
                   onClick={addColumn}
                   className="flex items-center gap-2"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="size-4" />
                   Column
                 </Button>
 
@@ -240,13 +243,13 @@ function App() {
                   onClick={resetTable}
                   className="flex items-center gap-2"
                 >
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw className="size-4" />
                   Reset
                 </Button>
 
-                <div className=" border-l w-px self-stretch -my-2"></div>
+                <div className=" -my-2 w-px self-stretch border-l"></div>
                 <div className="flex items-center gap-2">
-                  <Palette className="w-4 h-4" /> Themes:
+                  <Palette className="size-4" /> Themes:
                   <Select value={tableData.theme.id} onValueChange={handleThemeChange}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select theme" />
@@ -279,11 +282,7 @@ function App() {
         <Card className="mx-6 mb-8">
           <CardContent className="p-4">
             <div className="flex flex-col items-center space-y-6">
-              <div className="text-sm text-muted-foreground text-center font-medium">
-                Double-click cells to edit • Use arrow keys to navigate • Paste data from Excel/CSV
-              </div>
-              
-              <div 
+              <div
                 ref={tableRef}
                 className="w-full"
                 onPaste={handlePaste}
@@ -301,10 +300,19 @@ function App() {
                   />
                 </BackgroundWrapper>
               </div>
-              
-              <div className="text-xs text-muted-foreground text-center max-w-2xl leading-relaxed">
-                Import CSV/Excel files or paste data directly. Professional themes inspired by Carbon.sh 
-                for beautiful presentations. Export as high-quality images for sharing or documentation.
+
+              <div className="flex max-w-2xl flex-row gap-1 text-center text-xs leading-relaxed text-muted-foreground">
+                <Button variant="command" size="command" className="text-xs text-muted-foreground"><MousePointer2 className={commandButtonClass} /><span className="ml-2">Double-click cells to edit</span></Button>
+                <Button variant="command" size="command" className="space-x-1 text-xs text-muted-foreground"><ArrowBigUp className={commandButtonClass} /><ArrowBigDown className={commandButtonClass} /><ArrowBigLeft className={commandButtonClass} /><ArrowBigRight className={commandButtonClass} /><span className="ml-2">Navigate</span></Button>
+                <Button variant="command" size="command" className="text-xs text-muted-foreground">
+                  <p className={cn(commandButtonClass, "flex w-12 items-center justify-center")}>
+                    <span className="text-xs">CTRL</span>
+                  </p>
+                    <span className="mx-2 text-xs">+</span>
+                  <p className={cn(commandButtonClass, "flex w-6 items-center justify-center")}>
+                    <span className="text-xs">V</span>
+                  </p>
+                  <span className="ml-2">Paste data from Excel/CSV</span></Button>
               </div>
             </div>
           </CardContent>

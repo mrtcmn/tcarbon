@@ -92,7 +92,7 @@ export const TableCell: React.FC<TableCellProps> = ({
     return (
       <td
         className={cn(
-          'border border-gray-300 relative',
+          'relative border border-gray-300',
           isSelected && 'ring-2 ring-blue-500'
         )}
         style={style}
@@ -103,7 +103,7 @@ export const TableCell: React.FC<TableCellProps> = ({
           onChange={handleInputChange}
           onBlur={handleInputBlur}
           onKeyDown={handleInputKeyDown}
-          className="w-full h-full px-2 py-1 bg-transparent border-none outline-none"
+          className="size-full border-none bg-transparent px-2 py-1 outline-none"
           style={{ 
             fontFamily: 'inherit',
             fontSize: 'inherit',
@@ -117,8 +117,8 @@ export const TableCell: React.FC<TableCellProps> = ({
   return (
     <td
       className={cn(
-        'border border-gray-300 cursor-cell relative transition-all duration-150',
-        isSelected && 'ring-2 ring-blue-500 ring-inset',
+        'relative cursor-cell border border-gray-300 transition-all duration-150',
+        isSelected && 'ring-2 ring-inset ring-blue-500',
         getCellAlignment(cell.type),
         'hover:bg-black/5'
       )}
@@ -128,7 +128,7 @@ export const TableCell: React.FC<TableCellProps> = ({
       onKeyDown={onKeyDown}
       tabIndex={0}
     >
-      <div className="px-2 py-1 min-h-[1.5rem] flex items-center">
+      <div className="flex min-h-[1.5rem] items-center px-2 py-1">
         {formatCellValue(cell.value, cell.type)}
       </div>
     </td>

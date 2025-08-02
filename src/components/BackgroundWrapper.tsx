@@ -64,7 +64,7 @@ export const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({
 
   return (
     <div 
-      className={cn("relative rounded-xl overflow-hidden", className)}
+      className={cn("relative overflow-hidden rounded-xl", className)}
       style={getBackgroundStyle()}
     >
       {/* Optional overlay for better contrast when using background images */}
