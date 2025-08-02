@@ -220,7 +220,7 @@ function App() {
     updateFontSize(newSize)
   }, [getCurrentFontSize, updateFontSize])
 
-  const commandButtonClass = cn("size-6 rounded-md border border-gray-300 bg-white p-1 shadow-sm")
+  const commandButtonClass = cn("size-6 rounded-md border border-gray-300 bg-white p-1 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800")
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 transition-colors duration-300">
@@ -245,7 +245,7 @@ function App() {
 
         {/* Toolbar */}
         <Card className="p-0">
-          <CardContent className="bg-slate-100/30 p-0">
+          <CardContent className="bg-muted/30 p-0">
             <div className="flex flex-wrap items-center justify-between gap-4 p-2">
               <div className="flex flex-wrap gap-2">
                 <Button
