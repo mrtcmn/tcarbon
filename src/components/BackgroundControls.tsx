@@ -135,7 +135,7 @@ export const BackgroundControls: React.FC<BackgroundControlsProps> = ({
         className="hidden"
       />
 
-      {(backgroundColor || backgroundImage) && (
+      {(backgroundColor ?? backgroundImage) && (
         <Button
           variant="outline"
           size="sm"

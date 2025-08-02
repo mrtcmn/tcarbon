@@ -40,7 +40,7 @@ export const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({
 
   const getTableContainerStyle = (): React.CSSProperties => {
     return {
-      padding: theme.wrapperPadding || '60px',
+      padding: theme.wrapperPadding ?? '60px',
       minHeight: '600px',
       display: 'flex',
       alignItems: 'center',

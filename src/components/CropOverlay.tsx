@@ -18,7 +18,6 @@ interface DragState {
 export const CropOverlay: React.FC<CropOverlayProps> = ({
   cropSettings,
   onCropSettingsChange,
-  tableRef,
   children
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -54,7 +53,7 @@ export const CropOverlay: React.FC<CropOverlayProps> = ({
     const deltaX = e.clientX - dragState.dragStart.x
     const deltaY = e.clientY - dragState.dragStart.y
     
-    let newCropSettings = { ...dragState.initialCrop, enabled: cropSettings.enabled }
+    const newCropSettings = { ...dragState.initialCrop, enabled: cropSettings.enabled }
 
     switch (dragState.resizeHandle) {
       case 'top':
@@ -195,6 +194,14 @@ export const CropOverlay: React.FC<CropOverlayProps> = ({
             style={getCropStyle()}
             onMouseDown={(e) => startDrag(e, null)}
             className="group"
+            role="button"
+            tabIndex={0}
+            aria-label="Crop area - drag to move"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+              }
+            }}
           >
             {/* Resize handles */}
             {['top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].map((handle) => (
@@ -202,13 +209,21 @@ export const CropOverlay: React.FC<CropOverlayProps> = ({
                 key={handle}
                 style={getHandleStyle(handle)}
                 onMouseDown={(e) => startDrag(e, handle)}
-                className="opacity-70 hover:opacity-100 transition-opacity"
+                className="opacity-70 transition-opacity hover:opacity-100"
+                role="button"
+                tabIndex={0}
+                aria-label={`Resize handle - ${handle}`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                  }
+                }}
               />
             ))}
             
             {/* Move instruction (only show when not dragging) */}
             {!dragState.isDragging && (
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white rounded px-3 py-1 text-sm opacity-80 pointer-events-none">
+              <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded bg-blue-500 px-3 py-1 text-sm text-white opacity-80">
                 Drag to move • Drag handles to resize
               </div>
             )}
