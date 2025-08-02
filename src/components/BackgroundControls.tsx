@@ -87,9 +87,9 @@ export const BackgroundControls: React.FC<BackgroundControlsProps> = ({
   }
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex items-center gap-2 flex-wrap p-1">
       <div className="flex items-center gap-2">
-        <Palette className="w-4 h-4" />
+        <Palette className="w-4 h-4 ml-2" />
         <span className="text-sm font-medium">Background:</span>
       </div>
 
@@ -152,6 +152,7 @@ export const BackgroundControls: React.FC<BackgroundControlsProps> = ({
           Custom image active
         </div>
       )}
+      <div className="border-r self-stretch w-px -my-1"></div>
     </div>
   )
 }

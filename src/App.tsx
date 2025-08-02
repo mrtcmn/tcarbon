@@ -151,9 +151,9 @@ function App() {
         </div>
 
         {/* Toolbar */}
-        <Card className="mx-6">
-          <CardContent className="p-6">
-            <div className="flex flex-wrap gap-4 items-center justify-between">
+        <Card className="p-0">
+          <CardContent className="p-0">
+            <div className="flex flex-wrap gap-4 items-center justify-between p-2">
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
@@ -213,7 +213,6 @@ function App() {
                   PNG
                 </Button>
               </div>
-
               <div className="flex flex-wrap gap-2 items-center">
                 <Button
                   variant="outline"
@@ -245,8 +244,9 @@ function App() {
                   Reset
                 </Button>
 
+                <div className=" border-l w-px self-stretch -my-2"></div>
                 <div className="flex items-center gap-2">
-                  <Palette className="w-4 h-4" />
+                  <Palette className="w-4 h-4" /> Themes:
                   <Select value={tableData.theme.id} onValueChange={handleThemeChange}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select theme" />
@@ -264,7 +264,7 @@ function App() {
             </div>
 
             {/* Background Controls */}
-            <div className="border-t pt-4">
+            <div className="border-t">
               <BackgroundControls
                 backgroundColor={backgroundColor}
                 backgroundImage={backgroundImage}

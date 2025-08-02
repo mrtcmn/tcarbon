@@ -1,3 +1,6 @@
+import plugin from 'tailwindcss/plugin';
+
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -6,6 +9,11 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Geist', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Playfair Display', 'serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -48,5 +56,9 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [plugin(function ({ addBase }) {
+    addBase({
+      'html': { fontSize: "14px" },
+    })
+  }),],
 }
