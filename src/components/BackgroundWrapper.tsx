@@ -51,7 +51,6 @@ export const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({
   const getTableWrapperStyle = (): React.CSSProperties => {
     return {
       // macOS-style elevation and shadow
-      boxShadow: theme.tableShadow || '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
       borderRadius: '12px',
       overflow: 'hidden',
       // Subtle backdrop blur effect for glass-like appearance

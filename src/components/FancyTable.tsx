@@ -7,12 +7,14 @@ interface FancyTableProps {
   data: TableData
   onDataChange: (data: TableData) => void
   className?: string
+  hideSelection?: boolean
 }
 
 export const FancyTable: React.FC<FancyTableProps> = ({
   data,
   onDataChange,
-  className
+  className,
+  hideSelection = false
 }) => {
   const [selectedCell, setSelectedCell] = useState<CellPosition | null>({ rowIndex: 0, columnIndex: 0 })
   const [editingCell, setEditingCell] = useState<CellPosition | null>(null)
@@ -38,7 +40,7 @@ export const FancyTable: React.FC<FancyTableProps> = ({
 
   const handleCellChange = useCallback((rowIndex: number, columnIndex: number, value: string | number) => {
     const newData = { ...data }
-    if (newData.rows[rowIndex] && newData.rows[rowIndex].cells[columnIndex]) {
+    if (newData.rows[rowIndex]?.cells[columnIndex]) {
       newData.rows[rowIndex].cells[columnIndex].value = value
       onDataChange(newData)
     }
@@ -108,9 +110,9 @@ export const FancyTable: React.FC<FancyTableProps> = ({
 
   const getTableStyles = (theme: TableTheme): React.CSSProperties => {
     return {
+      boxShadow: theme.tableShadow ?? '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
       background: theme.background,
       borderRadius: theme.borderRadius,
-      overflow: 'hidden',
       fontFamily: theme.fontFamily,
       fontSize: theme.fontSize,
       color: theme.textColor,
@@ -119,14 +121,7 @@ export const FancyTable: React.FC<FancyTableProps> = ({
     }
   }
 
-  const getHeaderStyles = (theme: TableTheme): React.CSSProperties => {
-    return {
-      background: theme.headerBackground,
-      color: theme.headerTextColor,
-      padding: theme.cellPadding,
-      borderColor: theme.borderColor
-    }
-  }
+
 
   const getCellStyles = (theme: TableTheme, isAlternate: boolean): React.CSSProperties => {
     return {
@@ -136,21 +131,7 @@ export const FancyTable: React.FC<FancyTableProps> = ({
     }
   }
 
-  const renderHeaders = () => {
-    const headers = []
-    for (let i = 0; i < data.columnCount; i++) {
-      headers.push(
-        <th
-          key={i}
-          style={getHeaderStyles(data.theme)}
-          className="border border-gray-300 font-semibold"
-        >
-          {String.fromCharCode(65 + i)}
-        </th>
-      )
-    }
-    return headers
-  }
+
 
   return (
     <div 
@@ -171,11 +152,9 @@ export const FancyTable: React.FC<FancyTableProps> = ({
         className="border-collapse"
         style={{ borderColor: data.theme.borderColor }}
       >
-        <thead>
-          <tr>
-            {renderHeaders()}
-          </tr>
-        </thead>
+
+
+
         <tbody>
           {data.rows.map((row, rowIndex) => (
             <tr key={row.id}>
@@ -184,7 +163,7 @@ export const FancyTable: React.FC<FancyTableProps> = ({
                   key={cell.id}
                   cell={cell}
                   isSelected={
-                    selectedCell?.rowIndex === rowIndex && 
+                    !hideSelection && selectedCell?.rowIndex === rowIndex && 
                     selectedCell?.columnIndex === columnIndex
                   }
                   isEditing={

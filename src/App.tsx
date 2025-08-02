@@ -3,6 +3,8 @@ import { Upload, Download, Plus, Minus, Palette, Copy, FileImage, RefreshCw, Tab
 import { FancyTable } from './components/FancyTable.tsx'
 import { BackgroundWrapper } from './components/BackgroundWrapper.tsx'
 import { BackgroundControls } from './components/BackgroundControls.tsx'
+import { CropControls, type CropSettings } from './components/CropControls.tsx'
+import { CropOverlay } from './components/CropOverlay.tsx'
 import { ThemeToggle } from './components/ThemeToggle.tsx'
 import { Button } from './components/ui/button.tsx'
 import { Card, CardContent } from './components/ui/card.tsx'
@@ -26,11 +28,19 @@ function App() {
 
   const [backgroundColor, setBackgroundColor] = useState<string | undefined>(undefined)
   const [backgroundImage, setBackgroundImage] = useState<string | undefined>(undefined)
+  const [hideSelectionForExport, setHideSelectionForExport] = useState(false)
+  const [cropSettings, setCropSettings] = useState<CropSettings>({
+    top: 20,
+    right: 20,
+    bottom: 20,
+    left: 20,
+    enabled: false
+  })
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const tableRef = useRef<HTMLDivElement>(null)
 
-  const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = event.target.files?.[0]
     if (!file) return
 
@@ -60,7 +70,7 @@ function App() {
     }
   }, [updateTableData])
 
-  const handlePaste = useCallback(async (event: React.ClipboardEvent) => {
+  const handlePaste = useCallback((event: React.ClipboardEvent) => {
     event.preventDefault()
 
     const text = event.clipboardData.getData('text')
@@ -103,6 +113,19 @@ function App() {
     if (!tableRef.current) return
 
     try {
+      // Store original crop enabled state
+      const originalCropEnabled = cropSettings.enabled
+      
+      // Temporarily disable crop overlay and hide selection for clean export
+      if (originalCropEnabled) {
+        setCropSettings(prev => ({ ...prev, enabled: false }))
+      }
+      setHideSelectionForExport(true)
+      
+      // Wait a moment for the DOM to update
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // Capture the table without crop overlay and selection
       const canvas = await html2canvas(tableRef.current, {
         backgroundColor: null,
         scale: 2,
@@ -110,16 +133,62 @@ function App() {
         useCORS: true
       })
 
-      canvas.toBlob((blob) => {
-        if (blob) {
-          saveAs(blob, `${tableData.name}.png`)
+      // Restore crop overlay and selection visibility
+      if (originalCropEnabled) {
+        setCropSettings(prev => ({ ...prev, enabled: true }))
+      }
+      setHideSelectionForExport(false)
+
+      // If crop was enabled, create a cropped version
+      if (originalCropEnabled) {
+        const croppedCanvas = document.createElement('canvas')
+        const ctx = croppedCanvas.getContext('2d')
+        
+        if (ctx) {
+          // Calculate the crop area (scale by 2 because html2canvas uses scale: 2)
+          const scale = 2
+          const cropLeft = cropSettings.left * scale
+          const cropTop = cropSettings.top * scale
+          const cropWidth = canvas.width - (cropSettings.left + cropSettings.right) * scale
+          const cropHeight = canvas.height - (cropSettings.top + cropSettings.bottom) * scale
+          
+          // Set the cropped canvas size
+          croppedCanvas.width = cropWidth
+          croppedCanvas.height = cropHeight
+          
+          // Draw the cropped area onto the new canvas
+          ctx.drawImage(
+            canvas,
+            cropLeft, cropTop, cropWidth, cropHeight,
+            0, 0, cropWidth, cropHeight
+          )
+          
+          // Export the cropped canvas
+          croppedCanvas.toBlob((blob) => {
+            if (blob) {
+              saveAs(blob, `${tableData.name}_cropped.png`)
+            }
+          })
         }
-      })
+      } else {
+        // Export the full canvas as before
+        canvas.toBlob((blob) => {
+          if (blob) {
+            saveAs(blob, `${tableData.name}.png`)
+          }
+        })
+      }
     } catch (error) {
       console.error('Error exporting image:', error)
       alert('Error exporting image')
+      
+      // Ensure crop overlay and selection visibility are restored even if export fails
+      if (cropSettings.enabled) {
+        setCropSettings(prev => ({ ...prev, enabled: true }))
+      }
+      setHideSelectionForExport(false)
     }
-  }, [tableData.name])
+  }, [tableData.name, cropSettings, setCropSettings])
 
   const handleThemeChange = useCallback((themeId: string) => {
     const theme = getThemeById(themeId)
@@ -176,7 +245,7 @@ function App() {
 
         {/* Toolbar */}
         <Card className="p-0">
-          <CardContent className="p-0">
+          <CardContent className="bg-slate-100/30 p-0">
             <div className="flex flex-wrap items-center justify-between gap-4 p-2">
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -193,14 +262,14 @@ function App() {
                   ref={fileInputRef}
                   type="file"
                   accept=".csv,.xlsx,.xls"
-                  onChange={handleFileUpload}
+                  onChange={(e) => { void handleFileUpload(e) }}
                   className="hidden"
                 />
 
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleCopyTable}
+                  onClick={() => { void handleCopyTable() }}
                   className="flex items-center gap-2"
                 >
                   <Copy className="size-4" />
@@ -230,7 +299,7 @@ function App() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleExportImage}
+                  onClick={() => { void handleExportImage() }}
                   className="flex items-center gap-2"
                 >
                   <FileImage className="size-4" />
@@ -271,8 +340,8 @@ function App() {
       
 
                 <div className=" -my-2 w-px self-stretch border-l"></div>
-                <div className="flex items-center gap-2">
-                  <Type className="size-4" /> Font Size:
+                <div className="flex items-center justify-center gap-2">
+                  <Type className="size-4" /><p className="text-sm">Font Size:</p>
                   <div className="flex items-center gap-1">
                     <Button
                       variant="outline"
@@ -308,8 +377,8 @@ function App() {
                 onBackgroundColorChange={setBackgroundColor}
                 onBackgroundImageChange={setBackgroundImage}
               />
-              <div className="flex items-center gap-2">
-                <Palette className="size-4" /> Themes:
+              <div className="mx-2 flex items-center gap-2">
+                <Palette className="size-4" /> <p className="text-sm">Themes:</p>
                 <Select value={tableData.theme.id} onValueChange={handleThemeChange}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select theme" />
@@ -324,7 +393,10 @@ function App() {
                 </Select>
               </div>
               <div className="mx-2 w-px self-stretch border-l"></div>
-
+              <CropControls
+                cropSettings={cropSettings}
+                onCropSettingsChange={setCropSettings}
+              />
             </div>
           </CardContent>
         </Card>
@@ -338,17 +410,24 @@ function App() {
             onPaste={handlePaste}
             tabIndex={0}
           >
-            <BackgroundWrapper
-              theme={tableData.theme}
-              backgroundColor={backgroundColor}
-              backgroundImage={backgroundImage}
-              className="w-full"
+            <CropOverlay
+              cropSettings={cropSettings}
+              onCropSettingsChange={setCropSettings}
+              tableRef={tableRef}
             >
-              <FancyTable
-                data={tableData}
-                onDataChange={updateTableData}
-              />
-            </BackgroundWrapper>
+              <BackgroundWrapper
+                theme={tableData.theme}
+                backgroundColor={backgroundColor}
+                backgroundImage={backgroundImage}
+                className="w-full"
+              >
+                <FancyTable
+                  data={tableData}
+                  onDataChange={updateTableData}
+                  hideSelection={hideSelectionForExport}
+                />
+              </BackgroundWrapper>
+            </CropOverlay>
           </div>
 
           <div className="flex max-w-2xl flex-row gap-2 text-center text-xs leading-relaxed text-muted-foreground">
@@ -366,6 +445,13 @@ function App() {
           </div>
         </div>
 
+      </div>
+
+
+      <div className="flex flex-col items-center space-y-6">
+        <div className="flex flex-col items-center space-y-6">
+          <p className="mt-6 text-sm text-muted-foreground"><a href="https://x.com/mrtcmen">@mrtcmen</a></p>
+        </div>
       </div>
     </div>
   )
