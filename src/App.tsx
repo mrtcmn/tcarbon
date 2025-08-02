@@ -1,12 +1,11 @@
 import React, { useRef, useCallback, useState } from 'react'
-import { Upload, Download, Plus, Minus, Palette, Copy, FileImage, RefreshCw, Sparkles, Table, MousePointer2, ArrowBigDown, FileSpreadsheet, ArrowBigUp, ArrowBigLeft, ArrowBigRight } from 'lucide-react'
+import { Upload, Download, Plus, Minus, Palette, Copy, FileImage, RefreshCw, Table, MousePointer2, ArrowBigDown, ArrowBigUp, ArrowBigLeft, ArrowBigRight, Type } from 'lucide-react'
 import { FancyTable } from './components/FancyTable.tsx'
 import { BackgroundWrapper } from './components/BackgroundWrapper.tsx'
 import { BackgroundControls } from './components/BackgroundControls.tsx'
 import { ThemeToggle } from './components/ThemeToggle.tsx'
 import { Button } from './components/ui/button.tsx'
-import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card.tsx'
-import { Input } from './components/ui/input.tsx'
+import { Card, CardContent } from './components/ui/card.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select.tsx'
 import { useTableData } from './hooks/useTableData.ts'
 import { arrayToTableData, parseCSV, parseExcel, tableDataToCSV, tableDataToExcel } from './lib/fileUtils.ts'
@@ -22,9 +21,7 @@ function App() {
     updateTheme,
     resetTable,
     addRow,
-    addColumn,
-    removeRow,
-    removeColumn
+    addColumn
   } = useTableData()
 
   const [backgroundColor, setBackgroundColor] = useState<string | undefined>(undefined)
@@ -129,6 +126,30 @@ function App() {
     updateTheme(theme)
   }, [updateTheme])
 
+  // Font size management
+  const getCurrentFontSize = useCallback(() => {
+    return parseInt(tableData.theme.fontSize.replace('px', ''))
+  }, [tableData.theme.fontSize])
+
+  const updateFontSize = useCallback((newSize: number) => {
+    const newTheme = {
+      ...tableData.theme,
+      fontSize: `${newSize}px`
+    }
+    updateTheme(newTheme)
+  }, [tableData.theme, updateTheme])
+
+  const increaseFontSize = useCallback(() => {
+    const currentSize = getCurrentFontSize()
+    const newSize = Math.min(currentSize + 2, 32) // Max 32px
+    updateFontSize(newSize)
+  }, [getCurrentFontSize, updateFontSize])
+
+  const decreaseFontSize = useCallback(() => {
+    const currentSize = getCurrentFontSize()
+    const newSize = Math.max(currentSize - 2, 10) // Min 10px
+    updateFontSize(newSize)
+  }, [getCurrentFontSize, updateFontSize])
 
   const commandButtonClass = cn("size-6 rounded-md border border-gray-300 bg-white p-1 shadow-sm")
 
@@ -247,76 +268,104 @@ function App() {
                   Reset
                 </Button>
 
+      
+
                 <div className=" -my-2 w-px self-stretch border-l"></div>
                 <div className="flex items-center gap-2">
-                  <Palette className="size-4" /> Themes:
-                  <Select value={tableData.theme.id} onValueChange={handleThemeChange}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select theme" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {defaultThemes.map((theme) => (
-                        <SelectItem key={theme.id} value={theme.id}>
-                          {theme.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Type className="size-4" /> Font Size:
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={decreaseFontSize}
+                      className="flex size-8 items-center justify-center p-0"
+                      disabled={getCurrentFontSize() <= 10}
+                    >
+                      <Minus className="size-3" />
+                    </Button>
+                    <span className="min-w-[2.5rem] text-center text-sm font-medium">
+                      {getCurrentFontSize()}px
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={increaseFontSize}
+                      className="flex size-8 items-center justify-center p-0"
+                      disabled={getCurrentFontSize() >= 32}
+                    >
+                      <Plus className="size-3" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Background Controls */}
-            <div className="border-t">
+            <div className="flex flex-row border-t">
               <BackgroundControls
                 backgroundColor={backgroundColor}
                 backgroundImage={backgroundImage}
                 onBackgroundColorChange={setBackgroundColor}
                 onBackgroundImageChange={setBackgroundImage}
               />
+              <div className="flex items-center gap-2">
+                <Palette className="size-4" /> Themes:
+                <Select value={tableData.theme.id} onValueChange={handleThemeChange}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {defaultThemes.map((theme) => (
+                      <SelectItem key={theme.id} value={theme.id}>
+                        {theme.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="mx-2 w-px self-stretch border-l"></div>
+
             </div>
           </CardContent>
         </Card>
 
         {/* Table Preview */}
-        <Card className="mx-6 mb-8">
-          <CardContent className="p-4">
-            <div className="flex flex-col items-center space-y-6">
-              <div
-                ref={tableRef}
-                className="w-full"
-                onPaste={handlePaste}
-                tabIndex={0}
-              >
-                <BackgroundWrapper
-                  theme={tableData.theme}
-                  backgroundColor={backgroundColor}
-                  backgroundImage={backgroundImage}
-                  className="w-full"
-                >
-                  <FancyTable
-                    data={tableData}
-                    onDataChange={updateTableData}
-                  />
-                </BackgroundWrapper>
-              </div>
 
-              <div className="flex max-w-2xl flex-row gap-1 text-center text-xs leading-relaxed text-muted-foreground">
-                <Button variant="command" size="command" className="text-xs text-muted-foreground"><MousePointer2 className={commandButtonClass} /><span className="ml-2">Double-click cells to edit</span></Button>
-                <Button variant="command" size="command" className="space-x-1 text-xs text-muted-foreground"><ArrowBigUp className={commandButtonClass} /><ArrowBigDown className={commandButtonClass} /><ArrowBigLeft className={commandButtonClass} /><ArrowBigRight className={commandButtonClass} /><span className="ml-2">Navigate</span></Button>
-                <Button variant="command" size="command" className="text-xs text-muted-foreground">
-                  <p className={cn(commandButtonClass, "flex w-12 items-center justify-center")}>
-                    <span className="text-xs">CTRL</span>
-                  </p>
-                    <span className="mx-2 text-xs">+</span>
-                  <p className={cn(commandButtonClass, "flex w-6 items-center justify-center")}>
-                    <span className="text-xs">V</span>
-                  </p>
-                  <span className="ml-2">Paste data from Excel/CSV</span></Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center space-y-6">
+          <div
+            ref={tableRef}
+            className="w-full"
+            onPaste={handlePaste}
+            tabIndex={0}
+          >
+            <BackgroundWrapper
+              theme={tableData.theme}
+              backgroundColor={backgroundColor}
+              backgroundImage={backgroundImage}
+              className="w-full"
+            >
+              <FancyTable
+                data={tableData}
+                onDataChange={updateTableData}
+              />
+            </BackgroundWrapper>
+          </div>
+
+          <div className="flex max-w-2xl flex-row gap-2 text-center text-xs leading-relaxed text-muted-foreground">
+            <Button variant="command" size="command" className="text-xs text-muted-foreground"><MousePointer2 className={commandButtonClass} /><span className="ml-2">Double-click cells to edit</span></Button>
+            <Button variant="command" size="command" className="space-x-1 text-xs text-muted-foreground"><ArrowBigUp className={commandButtonClass} /><ArrowBigDown className={commandButtonClass} /><ArrowBigLeft className={commandButtonClass} /><ArrowBigRight className={commandButtonClass} /><span className="ml-2">Navigate</span></Button>
+            <Button variant="command" size="command" className="text-xs text-muted-foreground">
+              <p className={cn(commandButtonClass, "flex w-12 items-center justify-center")}>
+                <span className="text-xs">CTRL</span>
+              </p>
+              <span className="mx-2 text-xs">+</span>
+              <p className={cn(commandButtonClass, "flex w-6 items-center justify-center")}>
+                <span className="text-xs">V</span>
+              </p>
+              <span className="ml-2">Paste data from Excel/CSV</span></Button>
+          </div>
+        </div>
+
       </div>
     </div>
   )

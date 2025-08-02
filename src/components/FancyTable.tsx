@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react'
-import type { TableData, TableCell as TableCellType, CellPosition, TableTheme } from '../types/table.ts'
+import type { TableData, CellPosition, TableTheme } from '../types/table.ts'
 import { TableCell } from './TableCell.tsx'
-import { generateId, cn } from '../lib/utils.ts'
+import { cn } from '../lib/utils.ts'
 
 interface FancyTableProps {
   data: TableData
@@ -14,18 +14,26 @@ export const FancyTable: React.FC<FancyTableProps> = ({
   onDataChange,
   className
 }) => {
-  const [selectedCell, setSelectedCell] = useState<CellPosition | null>(null)
+  const [selectedCell, setSelectedCell] = useState<CellPosition | null>({ rowIndex: 0, columnIndex: 0 })
   const [editingCell, setEditingCell] = useState<CellPosition | null>(null)
+  const [editingStartedWithChar, setEditingStartedWithChar] = useState<string | null>(null)
   const tableRef = useRef<HTMLTableElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const handleCellClick = useCallback((rowIndex: number, columnIndex: number) => {
     setSelectedCell({ rowIndex, columnIndex })
     setEditingCell(null)
+    setEditingStartedWithChar(null)
+    // Ensure the container gets focus for keyboard navigation
+    if (containerRef.current) {
+      containerRef.current.focus()
+    }
   }, [])
 
   const handleCellDoubleClick = useCallback((rowIndex: number, columnIndex: number) => {
     setSelectedCell({ rowIndex, columnIndex })
     setEditingCell({ rowIndex, columnIndex })
+    setEditingStartedWithChar(null)
   }, [])
 
   const handleCellChange = useCallback((rowIndex: number, columnIndex: number, value: string | number) => {
@@ -35,11 +43,13 @@ export const FancyTable: React.FC<FancyTableProps> = ({
       onDataChange(newData)
     }
     setEditingCell(null)
+    setEditingStartedWithChar(null)
   }, [data, onDataChange])
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent, rowIndex: number, columnIndex: number) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!selectedCell) return
 
+    const { rowIndex, columnIndex } = selectedCell
     let newRowIndex = rowIndex
     let newColumnIndex = columnIndex
 
@@ -62,31 +72,38 @@ export const FancyTable: React.FC<FancyTableProps> = ({
         break
       case 'Enter':
         e.preventDefault()
-        if (editingCell) {
+        if (editingCell && editingCell.rowIndex === rowIndex && editingCell.columnIndex === columnIndex) {
           setEditingCell(null)
+          setEditingStartedWithChar(null)
         } else {
           setEditingCell({ rowIndex, columnIndex })
+          setEditingStartedWithChar(null)
         }
         return
       case 'Escape':
         e.preventDefault()
         setEditingCell(null)
+        setEditingStartedWithChar(null)
         return
       case 'Delete':
       case 'Backspace':
         e.preventDefault()
-        if (!editingCell) {
+        if (!editingCell || (editingCell.rowIndex !== rowIndex || editingCell.columnIndex !== columnIndex)) {
           handleCellChange(rowIndex, columnIndex, '')
         }
         return
       default:
-        if (!editingCell && e.key.length === 1) {
+        if (!editingCell && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault()
           setEditingCell({ rowIndex, columnIndex })
+          setEditingStartedWithChar(e.key)
         }
         return
     }
 
     setSelectedCell({ rowIndex: newRowIndex, columnIndex: newColumnIndex })
+    setEditingCell(null) // Stop editing when navigating
+    setEditingStartedWithChar(null)
   }, [selectedCell, editingCell, data.rows.length, data.columnCount, handleCellChange])
 
   const getTableStyles = (theme: TableTheme): React.CSSProperties => {
@@ -137,8 +154,17 @@ export const FancyTable: React.FC<FancyTableProps> = ({
 
   return (
     <div 
+      ref={containerRef}
       className={cn("inline-block", className)}
       style={getTableStyles(data.theme)}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      onClick={() => {
+        // Ensure the container gets focus when clicked
+        if (containerRef.current) {
+          containerRef.current.focus()
+        }
+      }}
     >
       <table 
         ref={tableRef}
@@ -165,10 +191,15 @@ export const FancyTable: React.FC<FancyTableProps> = ({
                     editingCell?.rowIndex === rowIndex && 
                     editingCell?.columnIndex === columnIndex
                   }
+                  editingStartedWithChar={
+                    editingCell?.rowIndex === rowIndex && 
+                    editingCell?.columnIndex === columnIndex 
+                      ? editingStartedWithChar 
+                      : null
+                  }
                   onCellClick={() => handleCellClick(rowIndex, columnIndex)}
                   onCellDoubleClick={() => handleCellDoubleClick(rowIndex, columnIndex)}
                   onCellChange={(value) => handleCellChange(rowIndex, columnIndex, value)}
-                  onKeyDown={(e) => handleKeyDown(e, rowIndex, columnIndex)}
                   style={getCellStyles(data.theme, rowIndex % 2 === 1)}
                 />
               ))}

@@ -6,10 +6,10 @@ interface TableCellProps {
   cell: TableCellType
   isSelected: boolean
   isEditing: boolean
+  editingStartedWithChar?: string | null
   onCellClick: () => void
   onCellDoubleClick: () => void
   onCellChange: (value: string | number) => void
-  onKeyDown: (e: React.KeyboardEvent) => void
   style?: React.CSSProperties
 }
 
@@ -17,10 +17,10 @@ export const TableCell: React.FC<TableCellProps> = ({
   cell,
   isSelected,
   isEditing,
+  editingStartedWithChar,
   onCellClick,
   onCellDoubleClick,
   onCellChange,
-  onKeyDown,
   style
 }) => {
   const [editValue, setEditValue] = useState(cell.value.toString())
@@ -32,6 +32,19 @@ export const TableCell: React.FC<TableCellProps> = ({
       inputRef.current.select()
     }
   }, [isEditing])
+
+  // When editing starts, check if we should start with a typed character
+  useEffect(() => {
+    if (isEditing) {
+      if (editingStartedWithChar) {
+        // Start editing with the typed character
+        setEditValue(editingStartedWithChar)
+      } else {
+        // Start editing with the current cell value
+        setEditValue(cell.value.toString())
+      }
+    }
+  }, [isEditing, editingStartedWithChar, cell.value])
 
   useEffect(() => {
     setEditValue(cell.value.toString())
@@ -59,7 +72,8 @@ export const TableCell: React.FC<TableCellProps> = ({
       e.preventDefault()
       handleInputBlur()
     }
-    onKeyDown(e)
+    // Prevent event bubbling to parent to avoid triggering table navigation
+    e.stopPropagation()
   }
 
   const formatCellValue = (value: string | number, type: CellType): string => {
@@ -71,7 +85,7 @@ export const TableCell: React.FC<TableCellProps> = ({
       case 'number':
         return formatNumber(value, cell.format?.decimals)
       case 'percentage':
-        return `${formatNumber(value * 100, cell.format?.decimals || 2)}%`
+        return `${formatNumber(value * 100, cell.format?.decimals ?? 2)}%`
       default:
         return value.toString()
     }
@@ -125,8 +139,6 @@ export const TableCell: React.FC<TableCellProps> = ({
       style={style}
       onClick={onCellClick}
       onDoubleClick={onCellDoubleClick}
-      onKeyDown={onKeyDown}
-      tabIndex={0}
     >
       <div className="flex min-h-[1.5rem] items-center px-2 py-1">
         {formatCellValue(cell.value, cell.type)}
